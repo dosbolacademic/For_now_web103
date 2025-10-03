@@ -1,0 +1,20 @@
+.boss-card {
+  border: 1px solid #ddd;
+  margin: 1rem;
+  padding: 1rem;
+  max-width: 300px;
+  display: inline-block;
+  vertical-align: top;
+}
+.boss-card img { max-width: 100%; height: auto; }
+.difficulty {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.difficulty.easy { background: green; color: white; }
+.difficulty.medium { background: orange; color: white; }
+.difficulty.hard { background: red; color: white; }
+.boss-detail { max-width: 600px; margin: 0 auto; }
+.boss-detail img { max-width: 400px; display: block; margin: 0 auto; }
+details { margin-top: 1rem; cursor: pointer; }
