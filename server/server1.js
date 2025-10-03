@@ -5,14 +5,17 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-dotenv.config({ debug: true });
-
-// Debug logs (remove after fixing)
-console.log('DB_USER:', process.env.DB_USER ? 'Set' : 'MISSING');
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'Set' : 'MISSING (hidden for security)');
-console.log('DB_NAME:', process.env.DB_NAME || 'MISSING');
+dotenv.config();
 const { Pool } = pkg;
 
+const { search } = req.query;
+let query = 'SELECT * FROM bosses';
+let params = [];
+if (search) {
+  query += ' WHERE title ILIKE $1 OR description ILIKE $1';
+  params = [`%${search}%`];
+}
+const result = await pool.query(query, params);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -20,8 +23,9 @@ const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
+  password: process.env.DB_PASSWORD,  // Trust ignores this, but keep for fallback
   port: process.env.DB_PORT,
+  ssl: false  // Disable SSL for local trust
 });
 
 const app = express();
@@ -57,10 +61,10 @@ app.get("/api/bosses/:slug", async (req, res) => {
   }
 });
 
-// Root route (SPA fallback for all paths)
+// SPA fallback
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
-const PORT = 3000 || process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
